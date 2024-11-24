@@ -66,11 +66,11 @@ public class UserService {
      *
      * @return текущий пользователь
      */
-    public User getCurrentUser(String currentUserName) {
+    public User getCurrentUser() {
 
-      //  var username = SecurityContextHolder.getContext().getAuthentication().getName();
+       var username = SecurityContextHolder.getContext().getAuthentication().getName();
 
-        return getByUsername(currentUserName);
+        return getByUsername(username);
     }
 
     public List<User> getAllUsers(){
@@ -84,7 +84,7 @@ public class UserService {
      */
     @Deprecated
     public void getAdmin() {
-        var user = getCurrentUser(SecurityContextHolder.getContext().getAuthentication().getName());
+        var user = getCurrentUser();
         user.setRole(Role.ROLE_ADMIN);
         save(user);
     }

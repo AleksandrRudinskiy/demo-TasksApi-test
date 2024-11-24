@@ -9,7 +9,6 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -77,10 +76,8 @@ public class UserServiceTest {
         Exception exception = assertThrows(NotUniqueUsernameException.class, () -> {
             service.create(newuser2);
         });
-
         String expectedMessage = "Пользователь с именем " + newuser2.getUsername() + " уже существует";
         String actualMessage = exception.getMessage();
-
         assertTrue(actualMessage.contains(expectedMessage));
     }
 
@@ -89,7 +86,6 @@ public class UserServiceTest {
         User newuser1 = makeUser(1L, "username", "password", "email@mail.ru", Role.ROLE_USER);
         service.save(newuser1);
         Authentication authentication = Mockito.mock(Authentication.class);
-// Mockito.whens() for your authorization object
         SecurityContext securityContext = Mockito.mock(SecurityContext.class);
         Mockito.when(securityContext.getAuthentication()).thenReturn(authentication);
         SecurityContextHolder.setContext(securityContext);
@@ -97,9 +93,26 @@ public class UserServiceTest {
                 .when(authentication.getName())
                 .thenReturn("username");
 
-        User user = service.getCurrentUser("username");
+        User user = service.getCurrentUser();
         assertThat(user.getUsername(), equalTo("username"));
+        assertThat(user.getRole(), equalTo(Role.ROLE_USER));
+    }
 
+    @Test
+    void getAdminTest() {
+        User newuser1 = makeUser(1L, "username", "password", "email@mail.ru", Role.ROLE_USER);
+        service.save(newuser1);
+        Authentication authentication = Mockito.mock(Authentication.class);
+        SecurityContext securityContext = Mockito.mock(SecurityContext.class);
+        Mockito.when(securityContext.getAuthentication()).thenReturn(authentication);
+        SecurityContextHolder.setContext(securityContext);
+        Mockito
+                .when(authentication.getName())
+                .thenReturn("username");
+        service.getAdmin();
+        User user = service.getCurrentUser();
+        assertThat(user.getUsername(), equalTo("username"));
+        assertThat(user.getRole(), equalTo(Role.ROLE_ADMIN));
     }
 
     private User makeUser(
