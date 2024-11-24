@@ -1,6 +1,7 @@
 package com.example.demo;
 
 
+import com.example.demo.exception.NotUniqueUserEmailException;
 import com.example.demo.exception.NotUniqueUsernameException;
 import com.example.demo.user.Role;
 import com.example.demo.user.User;
@@ -17,6 +18,8 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -28,7 +31,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
         webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class UserServiceTest {
-
     private final EntityManager em;
     private final UserService service;
 
@@ -69,7 +71,7 @@ public class UserServiceTest {
     }
 
     @Test
-    void whenDerivedExceptionThrown_thenAssertionSucceeds() {
+    void whenNotUniqueUsernameException() {
         User newuser1 = makeUser(1L, "username", "password", "email@mail.ru", Role.ROLE_USER);
         service.save(newuser1);
         User newuser2 = makeUser(2L, "username", "password", "rewfemail@mail.ru", Role.ROLE_USER);
@@ -77,6 +79,19 @@ public class UserServiceTest {
             service.create(newuser2);
         });
         String expectedMessage = "Пользователь с именем " + newuser2.getUsername() + " уже существует";
+        String actualMessage = exception.getMessage();
+        assertTrue(actualMessage.contains(expectedMessage));
+    }
+
+    @Test
+    void whenNotUniqueUserEmailException() {
+        User newuser1 = makeUser(1L, "username1", "password", "email@mail.ru", Role.ROLE_USER);
+        service.save(newuser1);
+        User newuser2 = makeUser(2L, "username2", "password", "email@mail.ru", Role.ROLE_USER);
+        Exception exception = assertThrows(NotUniqueUserEmailException.class, () -> {
+            service.create(newuser2);
+        });
+        String expectedMessage = "Пользователь с адресом " + newuser1.getEmail() + " уже существует";
         String actualMessage = exception.getMessage();
         assertTrue(actualMessage.contains(expectedMessage));
     }
@@ -113,6 +128,17 @@ public class UserServiceTest {
         User user = service.getCurrentUser();
         assertThat(user.getUsername(), equalTo("username"));
         assertThat(user.getRole(), equalTo(Role.ROLE_ADMIN));
+    }
+
+    @Test
+    void getAllUsersTest() {
+        User newuser1 = makeUser(1L, "username1", "password", "email1@mail.ru", Role.ROLE_USER);
+        User newuser2 = makeUser(2L, "username2", "password", "email2@mail.ru", Role.ROLE_USER);
+        service.save(newuser1);
+        service.save(newuser2);
+        List<User> users = service.getAllUsers();
+        assertThat(users.size(), equalTo(2));
+
     }
 
     private User makeUser(

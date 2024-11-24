@@ -1,8 +1,8 @@
 package com.example.demo.user;
 
+import com.example.demo.exception.NotUniqueUserEmailException;
 import com.example.demo.exception.NotUniqueUsernameException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -35,7 +35,7 @@ public class UserService {
                     "Пользователь с именем " + user.getUsername() + " уже существует");
         }
         if (repository.existsByEmail(user.getEmail())) {
-            throw new RuntimeException("Пользователь с таким email уже существует");
+            throw new NotUniqueUserEmailException("Пользователь с адресом " + user.getEmail() + " уже существует");
         }
         return save(user);
     }
@@ -68,12 +68,12 @@ public class UserService {
      */
     public User getCurrentUser() {
 
-       var username = SecurityContextHolder.getContext().getAuthentication().getName();
+        var username = SecurityContextHolder.getContext().getAuthentication().getName();
 
         return getByUsername(username);
     }
 
-    public List<User> getAllUsers(){
+    public List<User> getAllUsers() {
         return repository.findAll();
     }
 
