@@ -23,7 +23,6 @@ public class UserService {
         return repository.save(user);
     }
 
-
     /**
      * Создание пользователя
      *
@@ -34,7 +33,6 @@ public class UserService {
             throw new NotUniqueUsernameException(
                     "Пользователь с именем " + user.getUsername() + " уже существует");
         }
-
         if (repository.existsByEmail(user.getEmail())) {
             throw new RuntimeException("Пользователь с таким email уже существует");
         }
