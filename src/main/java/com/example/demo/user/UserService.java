@@ -2,6 +2,7 @@ package com.example.demo.user;
 
 import com.example.demo.exception.NotUniqueUsernameException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -65,9 +66,11 @@ public class UserService {
      *
      * @return текущий пользователь
      */
-    public User getCurrentUser() {
-        var username = SecurityContextHolder.getContext().getAuthentication().getName();
-        return getByUsername(username);
+    public User getCurrentUser(String currentUserName) {
+
+      //  var username = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        return getByUsername(currentUserName);
     }
 
     public List<User> getAllUsers(){
@@ -81,7 +84,7 @@ public class UserService {
      */
     @Deprecated
     public void getAdmin() {
-        var user = getCurrentUser();
+        var user = getCurrentUser(SecurityContextHolder.getContext().getAuthentication().getName());
         user.setRole(Role.ROLE_ADMIN);
         save(user);
     }
