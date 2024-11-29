@@ -50,7 +50,6 @@ public class UserServiceTest {
     void getUserByUserNameTest() {
         User newuser = makeUser(1L, "username", "password", "email@mail.ru", Role.ROLE_USER);
         service.save(newuser);
-
         User user = service.getByUsername("username");
         assertThat(user.getUsername(), equalTo(newuser.getUsername()));
         assertThat(user.getPassword(), equalTo(newuser.getPassword()));
