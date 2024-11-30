@@ -17,6 +17,8 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Base64;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -102,7 +104,7 @@ public class TaskServiceImpl implements TaskService {
                 taskPerformerRepository.save(taskPerformer);
                 taskDto1.setPerformer(UserMapper.convertToUserDto(userRepository.findById(taskPerformer.getPerformer().getId()).get()));
             }
-taskDto1.setCommentsIds(commentRepository.getCommentsIdByTaskId(taskId));
+            taskDto1.setCommentsIds(commentRepository.getCommentsIdByTaskId(taskId));
         }
         return taskDto1;
     }
@@ -119,6 +121,24 @@ taskDto1.setCommentsIds(commentRepository.getCommentsIdByTaskId(taskId));
         Comment comment = CommentMapper.convertToComment(commentDto, task, commenter);
         comment.setCreated(LocalDateTime.now());
         return commentRepository.save(comment);
+    }
+
+    @Override
+    public List<TaskDto> getPerformersTasks(Long performerId) {
+        if (performerId == null) {
+            return taskRepository.findAll().stream()
+                    .map(task -> TaskMapper.convertToTaskDto(task, null, null))
+                    .collect(Collectors.toList());
+        } else {
+            if (!userRepository.existsById(performerId)) {
+                throw new NotFoundException("Исполнитель с id " + performerId + " не найден!");
+            }
+            return taskPerformerRepository.getTaskIdsByPerformerId(performerId).stream()
+                    .map(taskId->taskRepository.findById(taskId).get())
+                    .map(task -> TaskMapper.convertToTaskDto(task, null, null))
+                    .collect(Collectors.toList());
+        }
+
     }
 
     private long getAuthorIdFromToken(String token) {

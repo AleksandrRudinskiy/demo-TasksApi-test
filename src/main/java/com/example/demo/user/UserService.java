@@ -1,5 +1,6 @@
 package com.example.demo.user;
 
+import com.example.demo.exception.NotFoundException;
 import com.example.demo.exception.NotUniqueUserEmailException;
 import com.example.demo.exception.NotUniqueUsernameException;
 import lombok.RequiredArgsConstructor;
@@ -13,7 +14,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class UserService {
-    private final UserRepository repository;
+    private final UserRepository userRepository;
 
     /**
      * Сохранение пользователя
@@ -21,7 +22,7 @@ public class UserService {
      * @return сохраненный пользователь
      */
     public User save(User user) {
-        return repository.save(user);
+        return userRepository.save(user);
     }
 
     /**
@@ -30,11 +31,11 @@ public class UserService {
      * @return созданный пользователь
      */
     public User create(User user) {
-        if (repository.existsByUsername(user.getUsername())) {
+        if (userRepository.existsByUsername(user.getUsername())) {
             throw new NotUniqueUsernameException(
                     "Пользователь с именем " + user.getUsername() + " уже существует");
         }
-        if (repository.existsByEmail(user.getEmail())) {
+        if (userRepository.existsByEmail(user.getEmail())) {
             throw new NotUniqueUserEmailException("Пользователь с адресом " + user.getEmail() + " уже существует");
         }
         return save(user);
@@ -46,9 +47,11 @@ public class UserService {
      * @return пользователь
      */
     public User getByUsername(String username) {
-        return repository.findByUsername(username)
+        return userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("Пользователь не найден"));
     }
+
+
 
     /**
      * Получение пользователя по имени пользователя
@@ -74,7 +77,14 @@ public class UserService {
     }
 
     public List<User> getAllUsers() {
-        return repository.findAll();
+        return userRepository.findAll();
+    }
+
+    public void deleteUser(Long id) {
+        if (!userRepository.existsById(id)) {
+            throw new NotFoundException("Пользователь не найден");
+        }
+        userRepository.deleteById(id);
     }
 
     /**

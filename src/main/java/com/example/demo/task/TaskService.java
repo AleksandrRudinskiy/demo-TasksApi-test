@@ -3,6 +3,8 @@ package com.example.demo.task;
 import com.example.demo.comment.Comment;
 import com.example.demo.comment.CommentDto;
 
+import java.util.List;
+
 public interface TaskService {
 
     TaskDto createTask(TaskDto taskDto, String authHeader);
@@ -12,4 +14,6 @@ public interface TaskService {
     TaskDto patchTaskByAdmin(TaskDto taskDto, long taskId);
 
     Comment addComment(String authHeader, long taskId, CommentDto commentDto);
+
+    List<TaskDto> getPerformersTasks(Long performerId);
 }
