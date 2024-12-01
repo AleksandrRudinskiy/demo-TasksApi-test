@@ -135,7 +135,9 @@ public class TaskServiceImpl implements TaskService {
             }
             return taskPerformerRepository.getTaskIdsByPerformerId(performerId).stream()
                     .map(taskId->taskRepository.findById(taskId).get())
-                    .map(task -> TaskMapper.convertToTaskDto(task, null, null))
+                    .map(task -> TaskMapper.convertToTaskDto(task,
+                            commentRepository.getCommentsIdByTaskId(task.getId()),
+                            UserMapper.convertToUserDto(taskPerformerRepository.getTaskPerformerByTaskId(task.getId()).getPerformer())))
                     .collect(Collectors.toList());
         }
 
