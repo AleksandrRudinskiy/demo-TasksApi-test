@@ -11,9 +11,10 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+
 @Service
 @RequiredArgsConstructor
-public class UserService {
+public class UserServiceImpl {
     private final UserRepository userRepository;
 
     /**
@@ -51,8 +52,6 @@ public class UserService {
                 .orElseThrow(() -> new UsernameNotFoundException("Пользователь не найден"));
     }
 
-
-
     /**
      * Получение пользователя по имени пользователя
      * <p>
@@ -70,16 +69,24 @@ public class UserService {
      * @return текущий пользователь
      */
     public User getCurrentUser() {
-
         var username = SecurityContextHolder.getContext().getAuthentication().getName();
-
         return getByUsername(username);
     }
 
+    /**
+     * Получение списка всех пользователей
+     *
+     * @return список всех зарегистрированных пользователей
+     */
     public List<User> getAllUsers() {
         return userRepository.findAll();
     }
 
+
+    /**
+     * Удаление пользователя по id
+     *
+     */
     public void deleteUser(Long id) {
         if (!userRepository.existsById(id)) {
             throw new NotFoundException("Пользователь не найден");

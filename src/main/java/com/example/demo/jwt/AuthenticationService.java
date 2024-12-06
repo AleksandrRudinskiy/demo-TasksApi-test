@@ -4,7 +4,7 @@ import com.example.demo.request.SignInRequest;
 import com.example.demo.request.SignUpRequest;
 import com.example.demo.user.Role;
 import com.example.demo.user.User;
-import com.example.demo.user.UserService;
+import com.example.demo.user.UserServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class AuthenticationService {
-    private final UserService userService;
+    private final UserServiceImpl userService;
     private final JwtService jwtService;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;

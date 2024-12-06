@@ -15,7 +15,7 @@ import java.util.List;
 @Tag(name = "Аутентификация")
 @Slf4j
 public class UserController {
-    private final UserService service;
+    private final UserServiceImpl service;
 
     @GetMapping
     @Operation(summary = "Доступен только авторизованным пользователям")

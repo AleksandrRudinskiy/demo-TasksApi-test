@@ -1,7 +1,7 @@
 package com.example.demo.configuration;
 
 import com.example.demo.jwt.JwtAuthenticationFilter;
-import com.example.demo.user.UserService;
+import com.example.demo.user.UserServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -28,7 +28,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class SecurityConfiguration {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
-    private final UserService userService;
+    private final UserServiceImpl userService;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {

@@ -5,7 +5,7 @@ import com.example.demo.exception.NotUniqueUserEmailException;
 import com.example.demo.exception.NotUniqueUsernameException;
 import com.example.demo.user.Role;
 import com.example.demo.user.User;
-import com.example.demo.user.UserService;
+import com.example.demo.user.UserServiceImpl;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 import lombok.RequiredArgsConstructor;
@@ -32,7 +32,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class UserServiceTest {
     private final EntityManager em;
-    private final UserService service;
+    private final UserServiceImpl service;
 
     @Test
     void saveUserTest() {

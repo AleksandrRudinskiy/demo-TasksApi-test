@@ -1,6 +1,6 @@
 package com.example.demo.jwt;
 
-import com.example.demo.user.UserService;
+import com.example.demo.user.UserServiceImpl;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -24,7 +24,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     public static final String BEARER_PREFIX = "Bearer ";
     public static final String HEADER_NAME = "Authorization";
     private final JwtService jwtService;
-    private final UserService userService;
+    private final UserServiceImpl userService;
 
     @Override
     protected void doFilterInternal(
