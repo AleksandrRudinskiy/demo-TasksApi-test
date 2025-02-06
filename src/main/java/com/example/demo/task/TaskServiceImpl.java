@@ -41,7 +41,7 @@ public class TaskServiceImpl implements TaskService {
     public TaskDto createTask(TaskDto taskDto, String authHeader) {
         String token = authHeader.substring(BEARER_PREFIX.length());
         long authorId = getAuthorIdFromToken(token);
-        User author = null;
+        User author;
         if (userRepository.findById(authorId).isPresent()) {
             author = userRepository.findById(authorId).get();
         } else {

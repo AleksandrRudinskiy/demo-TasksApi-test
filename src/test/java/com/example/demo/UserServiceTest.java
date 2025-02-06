@@ -1,14 +1,17 @@
 package com.example.demo;
 
 
+import com.example.demo.exception.NotFoundException;
 import com.example.demo.exception.NotUniqueUserEmailException;
 import com.example.demo.exception.NotUniqueUsernameException;
 import com.example.demo.user.Role;
 import com.example.demo.user.User;
+import com.example.demo.user.UserRepository;
 import com.example.demo.user.UserServiceImpl;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 import lombok.RequiredArgsConstructor;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +36,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class UserServiceTest {
     private final EntityManager em;
     private final UserServiceImpl service;
+    private final UserRepository repository;
+
 
     @Test
     void saveUserTest() {
@@ -131,8 +136,9 @@ public class UserServiceTest {
 
     @Test
     void getAllUsersTest() {
-        User newuser1 = makeUser(1L, "username1", "password", "email1@mail.ru", Role.ROLE_USER);
-        User newuser2 = makeUser(2L, "username2", "password", "email2@mail.ru", Role.ROLE_USER);
+
+        User newuser1 = makeUser(0L, "username3", "password", "email1@mail.ru", Role.ROLE_USER);
+        User newuser2 = makeUser(0L, "username4", "password", "email2@mail.ru", Role.ROLE_USER);
         service.save(newuser1);
         service.save(newuser2);
         List<User> users = service.getAllUsers();
@@ -149,5 +155,31 @@ public class UserServiceTest {
         user.setEmail(email);
         user.setRole(role);
         return user;
+    }
+
+    @Test
+    void whenNotFoundExceptionDeleteUserById() {
+        User newuser1 = makeUser(1L, "username", "password", "email@mail.ru", Role.ROLE_USER);
+        service.save(newuser1);
+
+        Exception exception = assertThrows(NotFoundException.class, () -> {
+            service.deleteUser(2L);
+        });
+        String expectedMessage = "Пользователь не найден";
+        String actualMessage = exception.getMessage();
+        assertTrue(actualMessage.contains(expectedMessage));
+    }
+
+    @Test
+    void deleteUserByIdTest() {
+        User newuser1 = makeUser(1L, "username", "password", "email@mail.ru", Role.ROLE_USER);
+        User savedUser = service.save(newuser1);
+        service.deleteUser(savedUser.getId());
+        Exception exception = assertThrows(NotFoundException.class, () -> {
+            service.deleteUser(savedUser.getId());
+        });
+        String expectedMessage = "Пользователь не найден";
+        String actualMessage = exception.getMessage();
+        assertTrue(actualMessage.contains(expectedMessage));
     }
 }
