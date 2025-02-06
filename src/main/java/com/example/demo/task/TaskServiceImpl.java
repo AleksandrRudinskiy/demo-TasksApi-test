@@ -12,6 +12,7 @@ import com.example.demo.user.UserRepository;
 import com.google.gson.Gson;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -167,7 +168,8 @@ public class TaskServiceImpl implements TaskService {
      * @return список задач исполнителя
      */
     @Override
-    public List<TaskDto> getPerformersTasks(Long performerId) {
+    public List<TaskDto> getPerformersTasks(Long performerId, int from, int size) {
+        PageRequest page = PageRequest.of(from > 0 ? from / size : 0, size);
         if (performerId == null) {
             return taskRepository.findAll().stream()
                     .map(task -> TaskMapper.convertToTaskDto(task, null, null))
@@ -176,19 +178,18 @@ public class TaskServiceImpl implements TaskService {
             if (!userRepository.existsById(performerId)) {
                 throw new NotFoundException("Исполнитель с id " + performerId + " не найден!");
             }
-            return taskPerformerRepository.getTaskIdsByPerformerId(performerId).stream()
+            return taskPerformerRepository.getTaskIdsByPerformerId(performerId, page).stream()
                     .map(taskId -> taskRepository.findById(taskId).isPresent() ? taskRepository.findById(taskId).get() : null)
                     .map(task -> TaskMapper.convertToTaskDto(task,
                             commentRepository.getCommentsIdByTaskId(task.getId()),
                             UserMapper.convertToUserDto(taskPerformerRepository.getTaskPerformerByTaskId(task.getId()).getPerformer())))
                     .collect(Collectors.toList());
         }
-
     }
 
     @Override
     public void deleteTaskById(Long taskId) {
-        
+
     }
 
     private long getAuthorIdFromToken(String token) {

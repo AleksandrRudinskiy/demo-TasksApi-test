@@ -28,9 +28,12 @@ public class TaskController {
 
     @GetMapping
     // /tasks?performerId=1
-    public List<TaskDto> getPerformersTasks(@RequestParam(required = false) final Long performerId) {
+    public List<TaskDto> getPerformersTasks(@RequestParam(required = false) final Long performerId,
+                                            @RequestParam(defaultValue = "0") int from,
+                                            @RequestParam(defaultValue = "10") int size
+    ) {
         log.info("GET-запрос на получение задач пользователя с id {} в которых он является исполнителем", performerId);
-        return taskService.getPerformersTasks(performerId);
+        return taskService.getPerformersTasks(performerId, from, size);
     }
 
 
