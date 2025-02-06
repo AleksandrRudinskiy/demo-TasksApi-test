@@ -1,0 +1,548 @@
+{
+	"info": {
+		"_postman_id": "18131df3-5cc7-4ad0-a061-0019108874d8",
+		"name": "users",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "41764901"
+	},
+	"item": [
+		{
+			"name": "Add (auth) new user",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Ответ должен содержать код статуса 200 и данные в формате json\", function(){\r",
+							"    pm.response.to.be.ok;// код ответа должен быть равен 200 ОК\r",
+							"    pm.response.to.be.withBody;// ответ должен содержать тело\r",
+							"    pm.response.to.be.json; // тело ответа должно быть в формате JSON\r",
+							"});\r",
+							"\r",
+							"const source = JSON.parse(pm.request.body.raw);\r",
+							"const target = pm.response.json();\r",
+							"\r",
+							"pm.test(\"Ответ должен содержать поле token\", function() {\r",
+							"    pm.expect(target).to.have.property('token');\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"username\": \"user1\",\r\n    \"email\":\"email@yandex.ru\",\r\n    \"password\":\"password\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/auth/sign-up",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"auth",
+						"sign-up"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get status ADMIN for user1",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Ответ должен содержать код статуса 200\", function(){\r",
+							"    pm.response.to.be.ok;// код ответа должен быть равен 200 ОК\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiUk9MRV9VU0VSIiwiaWQiOjEsImVtYWlsIjoiZW1haWxAeWFuZGV4LnJ1Iiwic3ViIjoidXNlcjEiLCJpYXQiOjE3Mzg3Nzg0MzksImV4cCI6MTczODkyMjQzOX0.BV_lQItjnUGApnoShr9O5meGs1A1SZp8C_63ZSObDwE",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"username\": \"user1\",\r\n    \"email\":\"email@yandex.ru\",\r\n    \"password\":\"password\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/example/get-admin",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"example",
+						"get-admin"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "create task by auth user 1",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Ответ должен содержать код статуса 200 и данные в формате json\", function(){\r",
+							"    pm.response.to.be.ok;// код ответа должен быть равен 200 ОК\r",
+							"    pm.response.to.be.withBody;// ответ должен содержать тело\r",
+							"    pm.response.to.be.json; // тело ответа должно быть в формате JSON\r",
+							"});\r",
+							"\r",
+							"const source = JSON.parse(pm.request.body.raw);\r",
+							"const target = pm.response.json();\r",
+							"\r",
+							"pm.test(\"Задача должна содержать поля: id, title, description, status, priority, author, performer, commentsIds\", function(){\r",
+							"    pm.expect(target).to.have.property('id');\r",
+							"    pm.expect(target).to.have.property('title');\r",
+							"    pm.expect(target).to.have.property('description');\r",
+							"    pm.expect(target).to.have.property('status');\r",
+							"    pm.expect(target).to.have.property('priority');\r",
+							"    pm.expect(target).to.have.property('author');\r",
+							"    pm.expect(target).to.have.property('performer');\r",
+							"    pm.expect(target).to.have.property('commentsIds');\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiUk9MRV9VU0VSIiwiaWQiOjEsImVtYWlsIjoiZW1haWxAeWFuZGV4LnJ1Iiwic3ViIjoidXNlcjEiLCJpYXQiOjE3Mzg3Nzg0MzksImV4cCI6MTczODkyMjQzOX0.BV_lQItjnUGApnoShr9O5meGs1A1SZp8C_63ZSObDwE",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"title\": \"new task\",\r\n    \"description\": \"some simple task\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/tasks",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"tasks"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "patch task status PENDING by Id=1",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Ответ должен содержать код статуса 200 и данные в формате json\", function(){\r",
+							"    pm.response.to.be.ok;// код ответа должен быть равен 200 ОК\r",
+							"    pm.response.to.be.withBody;// ответ должен содержать тело\r",
+							"    pm.response.to.be.json; // тело ответа должно быть в формате JSON\r",
+							"});\r",
+							"\r",
+							"const source = JSON.parse(pm.request.body.raw);\r",
+							"const target = pm.response.json();\r",
+							"\r",
+							"pm.test(\"Задача должна содержать поля: id, title, description, status, priority, author, performer, commentsIds\", function(){\r",
+							"    pm.expect(target).to.have.property('id');\r",
+							"    pm.expect(target).to.have.property('title');\r",
+							"    pm.expect(target).to.have.property('description');\r",
+							"    pm.expect(target).to.have.property('status');\r",
+							"    pm.expect(target).to.have.property('priority');\r",
+							"    pm.expect(target).to.have.property('author');\r",
+							"    pm.expect(target).to.have.property('performer');\r",
+							"    pm.expect(target).to.have.property('commentsIds');\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Данные в ответе должны соответствовать данным в запросе\", function() {\r",
+							"    pm.expect(target.id).to.not.be.null;\r",
+							"    pm.expect(source.status).equal(target.status, 'Статус обновленной задачи должен соответствовать отправленному в запросе');\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiUk9MRV9VU0VSIiwiaWQiOjEsImVtYWlsIjoiZW1haWxAeWFuZGV4LnJ1Iiwic3ViIjoidXNlcjEiLCJpYXQiOjE3Mzg3Nzg0MzksImV4cCI6MTczODkyMjQzOX0.BV_lQItjnUGApnoShr9O5meGs1A1SZp8C_63ZSObDwE",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"title\": \"new task\",\r\n    \"description\": \"some simple task\",\r\n    \"status\": \"PENDING\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/tasks/admin/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"tasks",
+						"admin",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "set task performer by admin",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Ответ должен содержать код статуса 200 и данные в формате json\", function(){\r",
+							"    pm.response.to.be.ok;// код ответа должен быть равен 200 ОК\r",
+							"    pm.response.to.be.withBody;// ответ должен содержать тело\r",
+							"    pm.response.to.be.json; // тело ответа должно быть в формате JSON\r",
+							"});\r",
+							"\r",
+							"const source = JSON.parse(pm.request.body.raw);\r",
+							"const target = pm.response.json();\r",
+							"\r",
+							"pm.test(\"Задача должна содержать поля: id, title, description, status, priority, author, performer, commentsIds\", function(){\r",
+							"    pm.expect(target).to.have.property('id');\r",
+							"    pm.expect(target).to.have.property('title');\r",
+							"    pm.expect(target).to.have.property('description');\r",
+							"    pm.expect(target).to.have.property('status');\r",
+							"    pm.expect(target).to.have.property('priority');\r",
+							"    pm.expect(target).to.have.property('author');\r",
+							"    pm.expect(target).to.have.property('performer');\r",
+							"    pm.expect(target).to.have.property('commentsIds');\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Данные в ответе должны соответствовать данным в запросе\", function() {\r",
+							"    pm.expect(target.id).to.not.be.null;\r",
+							"    pm.expect(source.title).equal(target.title, 'Заголовок обновленной задачи должен соответствовать отправленному в запросе');\r",
+							"    pm.expect(source.description).equal(target.description, 'Описание обновленной задачи должно соответствовать отправленному в запросе');\r",
+							"    pm.expect(source.status).equal(target.status, 'Статус обновленной задачи должен соответствовать отправленному в запросе');\r",
+							"    pm.expect(target.performer).to.not.be.null;\r",
+							"    pm.expect(source.performer.id).equal(target.performer.id, 'id исполнителя обновленной задачи должен соответствовать отправленному в запросе');\r",
+							"    pm.expect(source.performer.username).equal(target.performer.username, 'имя исполнителя обновленной задачи должнo соответствовать отправленному в запросе');\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiUk9MRV9VU0VSIiwiaWQiOjEsImVtYWlsIjoiZW1haWxAeWFuZGV4LnJ1Iiwic3ViIjoidXNlcjEiLCJpYXQiOjE3Mzg3Nzg0MzksImV4cCI6MTczODkyMjQzOX0.BV_lQItjnUGApnoShr9O5meGs1A1SZp8C_63ZSObDwE",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"title\": \"patched task\",\r\n    \"description\": \"some simple patched task\",\r\n    \"status\": \"PENDING\",\r\n    \"priority\": \"HIGH\",\r\n    \"performer\":{\r\n        \"id\": 1,\r\n        \"username\":\"user1\"\r\n    }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/tasks/admin/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"tasks",
+						"admin",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "created comment for task with id=1",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Ответ должен содержать код статуса 200 и данные в формате json\", function(){\r",
+							"    pm.response.to.be.ok;// код ответа должен быть равен 200 ОК\r",
+							"    pm.response.to.be.withBody;// ответ должен содержать тело\r",
+							"    pm.response.to.be.json; // тело ответа должно быть в формате JSON\r",
+							"});\r",
+							"\r",
+							"const source = JSON.parse(pm.request.body.raw);\r",
+							"const target = pm.response.json();\r",
+							"\r",
+							"pm.test(\"Комментарий должен содержать поля: id, \", function(){\r",
+							"    pm.expect(target).to.have.property('id');\r",
+							"    pm.expect(target).to.have.property('body');\r",
+							"    pm.expect(target).to.have.property('task');\r",
+							"    pm.expect(target).to.have.property('commenter');\r",
+							"    pm.expect(target).to.have.property('created');\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Данные в ответе должны соответствовать данным в запросе\", function() {\r",
+							"    pm.expect(target.id).to.not.be.null;\r",
+							"    pm.expect(source.body).equal(target.body, 'Заголовок обновленной задачи должен соответствовать отправленному в запросе');\r",
+							"    pm.expect(source.description).equal(target.description, 'Описание обновленной задачи должно соответствовать отправленному в запросе');\r",
+							"    pm.expect(target.commenter).to.not.be.null;\r",
+							"    pm.expect(target.commenter.id).equal(1, 'id автора комментария должен быть 1');\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiUk9MRV9VU0VSIiwiaWQiOjEsImVtYWlsIjoiZW1haWxAeWFuZGV4LnJ1Iiwic3ViIjoidXNlcjEiLCJpYXQiOjE3Mzg3Nzg0MzksImV4cCI6MTczODkyMjQzOX0.BV_lQItjnUGApnoShr9O5meGs1A1SZp8C_63ZSObDwE",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"body\": \"it is not easy task, lol\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/tasks/1/comment",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"tasks",
+						"1",
+						"comment"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get tasks where performerId= 1",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Ответ должен содержать код статуса 200\", function(){\r",
+							"    pm.response.to.be.ok;// код ответа должен быть равен 200 ОК\r",
+							"});\r",
+							"\r",
+							"const body = pm.response.json();\r",
+							"pm.test(\"Тело ответа должно быть массивом с количеством 1\", () => {\r",
+							"    pm.expect(body).is.an('array');\r",
+							"    pm.expect(body.length).equal(1);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiUk9MRV9VU0VSIiwiaWQiOjEsImVtYWlsIjoiZW1haWxAeWFuZGV4LnJ1Iiwic3ViIjoidXNlcjEiLCJpYXQiOjE3Mzg3Nzg0MzksImV4cCI6MTczODkyMjQzOX0.BV_lQItjnUGApnoShr9O5meGs1A1SZp8C_63ZSObDwE",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/tasks?performerId=1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"tasks"
+					],
+					"query": [
+						{
+							"key": "performerId",
+							"value": "1"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get task by id=1",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Ответ должен содержать код статуса 200 и данные в формате json\", function(){\r",
+							"    pm.response.to.be.ok;// код ответа должен быть равен 200 ОК\r",
+							"    pm.response.to.be.withBody;// ответ должен содержать тело\r",
+							"    pm.response.to.be.json; // тело ответа должно быть в формате JSON\r",
+							"});\r",
+							"\r",
+							"const target = pm.response.json();\r",
+							"\r",
+							"pm.test(\"Задача должна содержать поля: id, title, description, status, priority, author, performer, commentsIds\", function(){\r",
+							"    pm.expect(target).to.have.property('id');\r",
+							"    pm.expect(target).to.have.property('title');\r",
+							"    pm.expect(target).to.have.property('description');\r",
+							"    pm.expect(target).to.have.property('status');\r",
+							"    pm.expect(target).to.have.property('priority');\r",
+							"    pm.expect(target).to.have.property('author');\r",
+							"    pm.expect(target).to.have.property('performer');\r",
+							"    pm.expect(target).to.have.property('commentsIds');\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Задача id=1 должна содержать комментарий\",  () => {\r",
+							"    pm.expect(target.commentsIds).is.an('array');\r",
+							"    pm.expect(target.commentsIds.length).equal(1);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiUk9MRV9VU0VSIiwiaWQiOjEsImVtYWlsIjoiZW1haWxAeWFuZGV4LnJ1Iiwic3ViIjoidXNlcjEiLCJpYXQiOjE3Mzg3Nzg0MzksImV4cCI6MTczODkyMjQzOX0.BV_lQItjnUGApnoShr9O5meGs1A1SZp8C_63ZSObDwE",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/tasks/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"tasks",
+						"1"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
