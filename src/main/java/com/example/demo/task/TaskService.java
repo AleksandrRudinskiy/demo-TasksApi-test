@@ -16,4 +16,6 @@ public interface TaskService {
     Comment addComment(String authHeader, long taskId, CommentDto commentDto);
 
     List<TaskDto> getPerformersTasks(Long performerId);
+
+    void deleteTaskById(Long taskId);
 }

@@ -186,6 +186,11 @@ public class TaskServiceImpl implements TaskService {
 
     }
 
+    @Override
+    public void deleteTaskById(Long taskId) {
+        
+    }
+
     private long getAuthorIdFromToken(String token) {
         String[] chunks = token.split("\\.");
         Base64.Decoder decoder = Base64.getUrlDecoder();
