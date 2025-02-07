@@ -2,6 +2,7 @@ package com.example.demo.task;
 
 import com.example.demo.comment.CommentDto;
 import com.example.demo.comment.CommentMapper;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -19,11 +20,10 @@ public class TaskController {
 
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public TaskDto createTask(@RequestHeader(value = "Authorization") String authHeader,
-                              @RequestBody TaskDto taskDto) {
-        log.info("Заголовок авторизации {}", authHeader);
+  //  @Operation(summary = "Доступен только авторизованным пользователям")
+    public TaskDto createTask(@RequestBody TaskDto taskDto) {
         log.info("POST-запрос на создание задачи");
-        return taskService.createTask(taskDto, authHeader);
+        return taskService.createTask(taskDto);
     }
 
     @GetMapping

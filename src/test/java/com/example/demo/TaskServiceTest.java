@@ -33,7 +33,7 @@ public class TaskServiceTest {
         TaskDto newTaskDto = makeTaskDto(
                 1L, "task", "some task", Status.PENDING, Priority.LOW,
                 UserMapper.convertToUserDto(newuser), null, null);
-        taskService.createTask(newTaskDto, authHeader);
+        taskService.createTask(newTaskDto);
         Query query = em.createNativeQuery("Select * from tasks where title = :title", Task.class);
         Task task = (Task) query.setParameter("title", newTaskDto.getTitle()).getSingleResult();
         assertThat(task.getDescription(), equalTo(newTaskDto.getDescription()));

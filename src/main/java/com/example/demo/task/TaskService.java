@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface TaskService {
 
-    TaskDto createTask(TaskDto taskDto, String authHeader);
+    TaskDto createTask(TaskDto taskDto);
 
     TaskDto getTaskById(long id);
 

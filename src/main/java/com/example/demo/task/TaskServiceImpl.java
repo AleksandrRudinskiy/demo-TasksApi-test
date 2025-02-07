@@ -5,10 +5,7 @@ import com.example.demo.comment.CommentDto;
 import com.example.demo.comment.CommentMapper;
 import com.example.demo.comment.CommentRepository;
 import com.example.demo.exception.NotFoundException;
-import com.example.demo.user.User;
-import com.example.demo.user.UserDto;
-import com.example.demo.user.UserMapper;
-import com.example.demo.user.UserRepository;
+import com.example.demo.user.*;
 import com.google.gson.Gson;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,6 +27,7 @@ public class TaskServiceImpl implements TaskService {
     private final UserRepository userRepository;
     private final TaskPerformerRepository taskPerformerRepository;
     private final CommentRepository commentRepository;
+    private final UserServiceImpl userService;
 
 
     /**
@@ -38,15 +36,10 @@ public class TaskServiceImpl implements TaskService {
      * @return созданная задача
      */
     @Override
-    public TaskDto createTask(TaskDto taskDto, String authHeader) {
-        String token = authHeader.substring(BEARER_PREFIX.length());
-        long authorId = getAuthorIdFromToken(token);
-        User author;
-        if (userRepository.findById(authorId).isPresent()) {
-            author = userRepository.findById(authorId).get();
-        } else {
-            throw new NotFoundException("Пользователя с id " + authorId + " не существует!");
-        }
+    public TaskDto createTask(TaskDto taskDto) {
+
+        User author = userService.getCurrentUser();
+
         UserDto authorDto = UserMapper.convertToUserDto(
                 author);
         taskDto.setAuthor(authorDto);
