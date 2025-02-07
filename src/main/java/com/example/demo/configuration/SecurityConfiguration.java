@@ -1,6 +1,7 @@
 package com.example.demo.configuration;
 
 import com.example.demo.jwt.JwtAuthenticationFilter;
+import com.example.demo.user.Role;
 import com.example.demo.user.UserServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -49,7 +50,7 @@ public class SecurityConfiguration {
                         .requestMatchers("/tasks/**").permitAll()
                         .requestMatchers("/swagger-ui/**", "/swagger-resources/*", "/v3/api-docs/**").permitAll()
                         .requestMatchers("/endpoint", "/admin/**").hasRole("ADMIN")
-                        .requestMatchers("admin/tasks/**").hasRole("ADMIN")
+                        .requestMatchers("/admin/tasks/**").hasRole("ADMIN")
                         .anyRequest().authenticated())
                 .sessionManagement(manager -> manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider())

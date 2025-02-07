@@ -16,19 +16,18 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
 @Slf4j
 @AllArgsConstructor
 public class TaskServiceImpl implements TaskService {
-    public static final String BEARER_PREFIX = "Bearer ";
     private final TaskRepository taskRepository;
     private final UserRepository userRepository;
     private final TaskPerformerRepository taskPerformerRepository;
     private final CommentRepository commentRepository;
     private final UserServiceImpl userService;
-
 
     /**
      * Создание задачи
@@ -37,9 +36,7 @@ public class TaskServiceImpl implements TaskService {
      */
     @Override
     public TaskDto createTask(TaskDto taskDto) {
-
         User author = userService.getCurrentUser();
-
         UserDto authorDto = UserMapper.convertToUserDto(
                 author);
         taskDto.setAuthor(authorDto);
@@ -63,18 +60,16 @@ public class TaskServiceImpl implements TaskService {
      */
     @Override
     public TaskDto getTaskById(long id) {
-        User performer;
-        if (taskRepository.findById(id).isPresent()) {
+        List<Long> commentsIds = commentRepository.getCommentsIdByTaskId(id);
+        Optional<Task> taskOptional = taskRepository.findById(id);
+        if (taskOptional.isPresent()) {
             if (taskPerformerRepository.getTaskPerformerByTaskId(id) != null) {
-                performer = taskPerformerRepository.getTaskPerformerByTaskId(id).getPerformer();
+                User performer = taskPerformerRepository.getTaskPerformerByTaskId(id).getPerformer();
                 return TaskMapper.convertToTaskDto(
-                        taskRepository.findById(id).get(), commentRepository.getCommentsIdByTaskId(id),
+                        taskOptional.get(), commentsIds,
                         UserMapper.convertToUserDto(performer));
             } else {
-                return TaskMapper.convertToTaskDto(
-                        taskRepository.findById(id).get(), commentRepository.getCommentsIdByTaskId(id),
-                        null
-                );
+                return TaskMapper.convertToTaskDto(taskOptional.get(), commentsIds, null);
             }
         } else {
             throw new NotFoundException("Задача с id " + id + " не найдена");
@@ -129,21 +124,15 @@ public class TaskServiceImpl implements TaskService {
         }
     }
 
-
     /**
      * Создание комментария к задаче по taskId
      *
      * @return созданные комментарий
      */
     @Override
-    public Comment addComment(String authHeader, long taskId, CommentDto commentDto) {
-        String token = authHeader.substring(BEARER_PREFIX.length());
-        long authorId = getAuthorIdFromToken(token);
-        User commenter = null;
-        if (userRepository.findById(authorId).isPresent()) {
-            commenter = userRepository.findById(authorId).get();
-        }
-        Task task = null;
+    public Comment addComment(long taskId, CommentDto commentDto) {
+        User commenter = userService.getCurrentUser();
+        Task task;
         if (taskRepository.findById(taskId).isPresent()) {
             task = taskRepository.findById(taskId).get();
         } else {
@@ -153,7 +142,6 @@ public class TaskServiceImpl implements TaskService {
         comment.setCreated(LocalDateTime.now());
         return commentRepository.save(comment);
     }
-
 
     /**
      * Получение списка задач пользователя, в которых он является исполнителем

@@ -19,15 +19,14 @@ public class TaskController {
     private final TaskService taskService;
 
     @PostMapping
-    @PreAuthorize("hasRole('ADMIN')")
-  //  @Operation(summary = "Доступен только авторизованным пользователям")
+    @Operation(summary = "Доступен только авторизованным пользователям")
     public TaskDto createTask(@RequestBody TaskDto taskDto) {
         log.info("POST-запрос на создание задачи");
         return taskService.createTask(taskDto);
     }
 
     @GetMapping
-    // /tasks?performerId=1
+    @Operation(summary = "Доступен только авторизованным пользователям")
     public List<TaskDto> getPerformersTasks(@RequestParam(required = false) final Long performerId,
                                             @RequestParam(defaultValue = "0") int from,
                                             @RequestParam(defaultValue = "10") int size
@@ -36,7 +35,7 @@ public class TaskController {
         return taskService.getPerformersTasks(performerId, from, size);
     }
 
-
+// убрать парсинг заголовка
     @GetMapping("/{taskId}")
     public TaskDto getTaskById(@RequestHeader(value = "Authorization") String authHeader,
                                @PathVariable long taskId) {
@@ -45,21 +44,13 @@ public class TaskController {
         return taskService.getTaskById(taskId);
     }
 
-    @PatchMapping("/admin/{taskId}")
-    @PreAuthorize("hasRole('ADMIN')")
-    public TaskDto patchCompilation(@RequestBody TaskDto taskDto,
-                                    @PathVariable Long taskId) {
-        log.info("PATCH by admin with taskId = {} and body = {}", taskId, taskDto);
-        return taskService.patchTaskByAdmin(taskDto, taskId);
-    }
-
     @PostMapping("/{taskId}/comment")
-    public CommentDto addComment(@RequestHeader(value = "Authorization") String authHeader,
-                                 @PathVariable Long taskId,
+
+    public CommentDto addComment(@PathVariable Long taskId,
                                  @RequestBody CommentDto commentDto) {
         log.info("POST-запрос на добавления комментария к задаче {}", taskId);
         return CommentMapper.convertToCommentDto(
-                taskService.addComment(authHeader, taskId, commentDto)
+                taskService.addComment(taskId, commentDto)
         );
     }
 }

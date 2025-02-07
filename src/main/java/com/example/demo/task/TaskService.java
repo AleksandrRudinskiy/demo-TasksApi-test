@@ -13,7 +13,7 @@ public interface TaskService {
 
     TaskDto patchTaskByAdmin(TaskDto taskDto, long taskId);
 
-    Comment addComment(String authHeader, long taskId, CommentDto commentDto);
+    Comment addComment(long taskId, CommentDto commentDto);
 
     List<TaskDto> getPerformersTasks(Long performerId, int from, int size);
 
