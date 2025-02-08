@@ -38,15 +38,16 @@ public class UserController {
 
     @GetMapping("/users")
     @PreAuthorize("hasRole('ADMIN')")
-    public List<User> getAllUsers() {
+    public List<User> getAllUsers(@RequestParam(defaultValue = "0") int from,
+                                  @RequestParam(defaultValue = "10") int size) {
         log.info("GET-запрос от админа на вывод всех пользователей");
-        return service.getAllUsers();
+        return service.getAll(from, size);
     }
 
     @DeleteMapping("/users/{userId}")
     @PreAuthorize("hasRole('ADMIN')")
     public void deleteUser(@PathVariable Long userId) {
-        log.info("DELETE-запрос от админа на удаление пользователя с id {}",userId);
+        log.info("DELETE-запрос от админа на удаление пользователя с id {}", userId);
         service.deleteUser(userId);
     }
 }

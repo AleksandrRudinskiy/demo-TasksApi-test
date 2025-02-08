@@ -11,7 +11,6 @@ import com.example.demo.user.UserServiceImpl;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 import lombok.RequiredArgsConstructor;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -141,7 +140,7 @@ public class UserServiceTest {
         User newuser2 = makeUser(0L, "username4", "password", "email2@mail.ru", Role.ROLE_USER);
         service.save(newuser1);
         service.save(newuser2);
-        List<User> users = service.getAllUsers();
+        List<User> users = service.getAll(0, 10);
         assertThat(users.size(), equalTo(2));
 
     }

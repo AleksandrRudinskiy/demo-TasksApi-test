@@ -101,6 +101,10 @@ public class TaskServiceImpl implements TaskService {
                 String description = taskDto.getDescription();
                 pachedTask.setDescription(description);
             }
+            if (taskDto.getPriority() != null) {
+                Priority priority = taskDto.getPriority();
+                pachedTask.setPriority(priority);
+            }
             TaskDto taskDto1 = TaskMapper.convertToTaskDto(taskRepository.save(pachedTask), new ArrayList<>(), null);
             if (taskDto.getPerformer() != null) {
                 User performer = userRepository.findById(taskDto.getPerformer().getId()).get();

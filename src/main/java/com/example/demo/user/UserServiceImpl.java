@@ -4,6 +4,7 @@ import com.example.demo.exception.NotFoundException;
 import com.example.demo.exception.NotUniqueUserEmailException;
 import com.example.demo.exception.NotUniqueUsernameException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -14,7 +15,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class UserServiceImpl {
+public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
 
     /**
@@ -78,14 +79,14 @@ public class UserServiceImpl {
      *
      * @return список всех зарегистрированных пользователей
      */
-    public List<User> getAllUsers() {
-        return userRepository.findAll();
+    public List<User> getAll(int from, int size) {
+        PageRequest page = PageRequest.of(from > 0 ? from / size : 0, size);
+        return userRepository.getAll(page);
     }
 
 
     /**
      * Удаление пользователя по id
-     *
      */
     public void deleteUser(Long id) {
         if (!userRepository.existsById(id)) {
