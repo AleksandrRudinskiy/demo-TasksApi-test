@@ -7,7 +7,7 @@
 	},
 	"item": [
 		{
-			"name": "Add (auth) new user",
+			"name": "add new user (registration)",
 			"event": [
 				{
 					"listen": "prerequest",
@@ -34,7 +34,12 @@
 							"\r",
 							"pm.test(\"Ответ должен содержать поле token\", function() {\r",
 							"    pm.expect(target).to.have.property('token');\r",
-							"});"
+							"});\r",
+							"\r",
+							"pm.test(\"Set token to variable\", () => {\r",
+							"    var responseJson = pm.response.json();\r",
+							"    pm.collectionVariables.set(\"token\", responseJson.token);\r",
+							"})"
 						],
 						"type": "text/javascript",
 						"packages": {}
@@ -66,62 +71,6 @@
 					"path": [
 						"auth",
 						"sign-up"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Get status ADMIN for user1",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"Ответ должен содержать код статуса 200\", function(){\r",
-							"    pm.response.to.be.ok;// код ответа должен быть равен 200 ОК\r",
-							"});"
-						],
-						"type": "text/javascript",
-						"packages": {}
-					}
-				}
-			],
-			"protocolProfileBehavior": {
-				"disableBodyPruning": true
-			},
-			"request": {
-				"auth": {
-					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiUk9MRV9VU0VSIiwiaWQiOjEsImVtYWlsIjoiZW1haWxAeWFuZGV4LnJ1Iiwic3ViIjoidXNlcjEiLCJpYXQiOjE3Mzg3Nzg0MzksImV4cCI6MTczODkyMjQzOX0.BV_lQItjnUGApnoShr9O5meGs1A1SZp8C_63ZSObDwE",
-							"type": "string"
-						}
-					]
-				},
-				"method": "GET",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"username\": \"user1\",\r\n    \"email\":\"email@yandex.ru\",\r\n    \"password\":\"password\"\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "http://localhost:8080/example/get-admin",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "8080",
-					"path": [
-						"example",
-						"get-admin"
 					]
 				}
 			},
@@ -165,7 +114,7 @@
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiUk9MRV9VU0VSIiwiaWQiOjEsImVtYWlsIjoiZW1haWxAeWFuZGV4LnJ1Iiwic3ViIjoidXNlcjEiLCJpYXQiOjE3Mzg3Nzg0MzksImV4cCI6MTczODkyMjQzOX0.BV_lQItjnUGApnoShr9O5meGs1A1SZp8C_63ZSObDwE",
+							"value": "{{token}}",
 							"type": "string"
 						}
 					]
@@ -190,6 +139,198 @@
 					"port": "8080",
 					"path": [
 						"tasks"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "created comment for task with id=1",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Ответ должен содержать код статуса 200 и данные в формате json\", function(){\r",
+							"    pm.response.to.be.ok;// код ответа должен быть равен 200 ОК\r",
+							"    pm.response.to.be.withBody;// ответ должен содержать тело\r",
+							"    pm.response.to.be.json; // тело ответа должно быть в формате JSON\r",
+							"});\r",
+							"\r",
+							"const source = JSON.parse(pm.request.body.raw);\r",
+							"const target = pm.response.json();\r",
+							"\r",
+							"pm.test(\"Комментарий должен содержать поля: id, \", function(){\r",
+							"    pm.expect(target).to.have.property('id');\r",
+							"    pm.expect(target).to.have.property('body');\r",
+							"    pm.expect(target).to.have.property('task');\r",
+							"    pm.expect(target).to.have.property('commenter');\r",
+							"    pm.expect(target).to.have.property('created');\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Данные в ответе должны соответствовать данным в запросе\", function() {\r",
+							"    pm.expect(target.id).to.not.be.null;\r",
+							"    pm.expect(source.body).equal(target.body, 'Заголовок обновленной задачи должен соответствовать отправленному в запросе');\r",
+							"    pm.expect(source.description).equal(target.description, 'Описание обновленной задачи должно соответствовать отправленному в запросе');\r",
+							"    pm.expect(target.commenter).to.not.be.null;\r",
+							"    pm.expect(target.commenter.id).equal(1, 'id автора комментария должен быть 1');\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"body\": \"it is not easy task, lol\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/tasks/1/comment",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"tasks",
+						"1",
+						"comment"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get status ADMIN for user1",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Ответ должен содержать код статуса 200\", function(){\r",
+							"    pm.response.to.be.ok;// код ответа должен быть равен 200 ОК\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/example/get-admin",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"example",
+						"get-admin"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "authorithation as ADMIN",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Ответ должен содержать код статуса 200 и данные в формате json\", function(){\r",
+							"    pm.response.to.be.ok;// код ответа должен быть равен 200 ОК\r",
+							"    pm.response.to.be.withBody;// ответ должен содержать тело\r",
+							"    pm.response.to.be.json; // тело ответа должно быть в формате JSON\r",
+							"});\r",
+							"\r",
+							"const source = JSON.parse(pm.request.body.raw);\r",
+							"const target = pm.response.json();\r",
+							"\r",
+							"pm.test(\"Ответ должен содержать поле token\", function() {\r",
+							"    pm.expect(target).to.have.property('token');\r",
+							"});\r",
+							"\r",
+							"//Передача токена администратора\r",
+							"pm.test(\"Set token_admin to variable\", () => {\r",
+							"    var responseJson = pm.response.json();\r",
+							"    pm.collectionVariables.set(\"token_admin\", responseJson.token);\r",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"username\": \"user1\",\r\n    \"email\":\"email@yandex.ru\",\r\n    \"password\":\"password\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/auth/sign-in",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"auth",
+						"sign-in"
 					]
 				}
 			},
@@ -238,7 +379,7 @@
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiUk9MRV9VU0VSIiwiaWQiOjEsImVtYWlsIjoiZW1haWxAeWFuZGV4LnJ1Iiwic3ViIjoidXNlcjEiLCJpYXQiOjE3Mzg3Nzg0MzksImV4cCI6MTczODkyMjQzOX0.BV_lQItjnUGApnoShr9O5meGs1A1SZp8C_63ZSObDwE",
+							"value": "{{token_admin}}",
 							"type": "string"
 						}
 					]
@@ -255,15 +396,15 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:8080/tasks/admin/1",
+					"raw": "http://localhost:8080/admin/tasks/1",
 					"protocol": "http",
 					"host": [
 						"localhost"
 					],
 					"port": "8080",
 					"path": [
-						"tasks",
 						"admin",
+						"tasks",
 						"1"
 					]
 				}
@@ -318,7 +459,7 @@
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiUk9MRV9VU0VSIiwiaWQiOjEsImVtYWlsIjoiZW1haWxAeWFuZGV4LnJ1Iiwic3ViIjoidXNlcjEiLCJpYXQiOjE3Mzg3Nzg0MzksImV4cCI6MTczODkyMjQzOX0.BV_lQItjnUGApnoShr9O5meGs1A1SZp8C_63ZSObDwE",
+							"value": "{{token_admin}}",
 							"type": "string"
 						}
 					]
@@ -335,15 +476,15 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:8080/tasks/admin/1",
+					"raw": "http://localhost:8080/admin/tasks/1",
 					"protocol": "http",
 					"host": [
 						"localhost"
 					],
 					"port": "8080",
 					"path": [
-						"tasks",
 						"admin",
+						"tasks",
 						"1"
 					]
 				}
@@ -351,7 +492,7 @@
 			"response": []
 		},
 		{
-			"name": "created comment for task with id=1",
+			"name": "update priority field for task with id = 1",
 			"event": [
 				{
 					"listen": "test",
@@ -366,20 +507,20 @@
 							"const source = JSON.parse(pm.request.body.raw);\r",
 							"const target = pm.response.json();\r",
 							"\r",
-							"pm.test(\"Комментарий должен содержать поля: id, \", function(){\r",
+							"pm.test(\"Задача должна содержать поля: id, title, description, status, priority, author, performer, commentsIds\", function(){\r",
 							"    pm.expect(target).to.have.property('id');\r",
-							"    pm.expect(target).to.have.property('body');\r",
-							"    pm.expect(target).to.have.property('task');\r",
-							"    pm.expect(target).to.have.property('commenter');\r",
-							"    pm.expect(target).to.have.property('created');\r",
+							"    pm.expect(target).to.have.property('title');\r",
+							"    pm.expect(target).to.have.property('description');\r",
+							"    pm.expect(target).to.have.property('status');\r",
+							"    pm.expect(target).to.have.property('priority');\r",
+							"    pm.expect(target).to.have.property('author');\r",
+							"    pm.expect(target).to.have.property('performer');\r",
+							"    pm.expect(target).to.have.property('commentsIds');\r",
 							"});\r",
 							"\r",
 							"pm.test(\"Данные в ответе должны соответствовать данным в запросе\", function() {\r",
 							"    pm.expect(target.id).to.not.be.null;\r",
-							"    pm.expect(source.body).equal(target.body, 'Заголовок обновленной задачи должен соответствовать отправленному в запросе');\r",
-							"    pm.expect(source.description).equal(target.description, 'Описание обновленной задачи должно соответствовать отправленному в запросе');\r",
-							"    pm.expect(target.commenter).to.not.be.null;\r",
-							"    pm.expect(target.commenter.id).equal(1, 'id автора комментария должен быть 1');\r",
+							"    pm.expect(source.priority).equal(target.priority, 'приоритет обновленной задачи должен соответствовать отправленному в запросе');\r",
 							"});"
 						],
 						"type": "text/javascript",
@@ -393,16 +534,16 @@
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiUk9MRV9VU0VSIiwiaWQiOjEsImVtYWlsIjoiZW1haWxAeWFuZGV4LnJ1Iiwic3ViIjoidXNlcjEiLCJpYXQiOjE3Mzg3Nzg0MzksImV4cCI6MTczODkyMjQzOX0.BV_lQItjnUGApnoShr9O5meGs1A1SZp8C_63ZSObDwE",
+							"value": "{{token_admin}}",
 							"type": "string"
 						}
 					]
 				},
-				"method": "POST",
+				"method": "PATCH",
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"body\": \"it is not easy task, lol\"\r\n}",
+					"raw": "{\r\n    \"priority\": \"MEDIUM\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -410,16 +551,16 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:8080/tasks/1/comment",
+					"raw": "http://localhost:8080/admin/tasks/1",
 					"protocol": "http",
 					"host": [
 						"localhost"
 					],
 					"port": "8080",
 					"path": [
+						"admin",
 						"tasks",
-						"1",
-						"comment"
+						"1"
 					]
 				}
 			},
@@ -453,7 +594,7 @@
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiUk9MRV9VU0VSIiwiaWQiOjEsImVtYWlsIjoiZW1haWxAeWFuZGV4LnJ1Iiwic3ViIjoidXNlcjEiLCJpYXQiOjE3Mzg3Nzg0MzksImV4cCI6MTczODkyMjQzOX0.BV_lQItjnUGApnoShr9O5meGs1A1SZp8C_63ZSObDwE",
+							"value": "{{token}}",
 							"type": "string"
 						}
 					]
@@ -522,7 +663,7 @@
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiUk9MRV9VU0VSIiwiaWQiOjEsImVtYWlsIjoiZW1haWxAeWFuZGV4LnJ1Iiwic3ViIjoidXNlcjEiLCJpYXQiOjE3Mzg3Nzg0MzksImV4cCI6MTczODkyMjQzOX0.BV_lQItjnUGApnoShr9O5meGs1A1SZp8C_63ZSObDwE",
+							"value": "{{token}}",
 							"type": "string"
 						}
 					]
@@ -543,6 +684,40 @@
 				}
 			},
 			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "token_admin",
+			"value": "",
+			"type": "string"
 		}
 	]
 }
