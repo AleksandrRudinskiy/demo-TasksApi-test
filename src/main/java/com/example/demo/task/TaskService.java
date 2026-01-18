@@ -19,5 +19,5 @@ public interface TaskService {
 
     List<CommentDto> getTaskComments(Long taskId);
 
-    void deleteTaskById(Long taskId);
+    TaskDto deleteTaskById(Long taskId);
 }

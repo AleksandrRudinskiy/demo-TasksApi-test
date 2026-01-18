@@ -51,8 +51,14 @@ public class TaskController {
     }
 
     @GetMapping("/{taskId}/comment")
-    public CommentDto getAllTaskComments(@PathVariable Long taskId) {
+    public List<CommentDto> getAllTaskComments(@PathVariable Long taskId) {
         log.info("GET-запрос на получение всех комментариев задачи с id {}", taskId);
-        return null ;
+        return taskService.getTaskComments(taskId);
+    }
+
+    @DeleteMapping("/{taskId}")
+    public TaskDto deleteTaskById(@PathVariable Long taskId) {
+        log.info("DELETE -запрос на удаление задачи по id {}", taskId);
+        return taskService.deleteTaskById(taskId);
     }
 }

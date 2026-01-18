@@ -30,7 +30,7 @@ public class TaskServiceImpl implements TaskService {
     private final UserServiceImpl userService;
 
     /**
-     * Создание задачи
+     * Создание задачи (исполнитель назначается администратором)
      *
      * @return созданная задача
      */
@@ -174,21 +174,41 @@ public class TaskServiceImpl implements TaskService {
 
 
     /**
-     * Получение списка всех комментариев к задаче
+     * Получение списка всех комментариев к задаче по taskId
      *
      * @return список комментариев
      */
     @Override
     public List<CommentDto> getTaskComments(Long taskId) {
-
+        int commentsCount = commentRepository.findByTaskId(taskId).size();
+        log.info("Comments count of task id = {} is: {}", taskId, commentsCount);
         return commentRepository.findByTaskId(taskId).stream()
                 .map(CommentMapper::convertToCommentDto)
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Удаление задачи по id
+     *
+     * @return удаленная задача
+     */
     @Override
-    public void deleteTaskById(Long taskId) {
-
+    public TaskDto deleteTaskById(Long taskId) {
+        Optional<Task> taskOptional = taskRepository.findById(taskId);
+        List<Long> commentsIds = commentRepository.getCommentsIdByTaskId(taskId);
+        User performer;
+        TaskDto taskDto;
+        if (taskOptional.isEmpty()) {
+            throw new NotFoundException("Task not present id = " + taskId);
+        } else {
+            taskDto = TaskMapper.convertToTaskDto(taskOptional.get(), commentsIds, null);
+            if (taskPerformerRepository.getTaskPerformerByTaskId(taskId) != null) {
+                performer = taskPerformerRepository.getTaskPerformerByTaskId(taskId).getPerformer();
+                taskDto = TaskMapper.convertToTaskDto(taskOptional.get(), commentsIds, UserMapper.convertToUserDto(performer));
+            }
+            taskRepository.deleteById(taskId);
+            return taskDto;
+        }
     }
 
     private long getAuthorIdFromToken(String token) {
