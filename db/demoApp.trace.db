@@ -1,0 +1,12 @@
+2024-11-16 23:47:34.066432+03:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "USERS" not found (this database is empty); SQL statement:
+select u1_0.id from users u1_0 where u1_0.username=? fetch first ? rows only [42104-224]
+2024-11-16 23:53:51.555018+03:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "USERS" not found (this database is empty); SQL statement:
+select u1_0.id from users u1_0 where u1_0.username=? fetch first ? rows only [42104-224]
+2024-11-16 23:58:18.744216+03:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "USERS" not found (this database is empty); SQL statement:
+select u1_0.id from users u1_0 where u1_0.username=? fetch first ? rows only [42104-224]
+2024-11-16 23:59:25.080089+03:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "USERS" not found (this database is empty); SQL statement:
+select u1_0.id from users u1_0 where u1_0.username=? fetch first ? rows only [42104-224]
