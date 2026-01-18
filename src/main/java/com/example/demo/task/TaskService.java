@@ -17,5 +17,7 @@ public interface TaskService {
 
     List<TaskDto> getPerformersTasks(Long performerId, int from, int size);
 
+    List<CommentDto> getTaskComments(Long taskId);
+
     void deleteTaskById(Long taskId);
 }

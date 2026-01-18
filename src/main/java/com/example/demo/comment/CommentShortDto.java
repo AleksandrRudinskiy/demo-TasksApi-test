@@ -1,2 +1,5 @@
-package com.example.demo.comment;public class CommentShortDto {
+package com.example.demo.comment;
+
+public class CommentShortDto {
+
 }

@@ -41,11 +41,18 @@ public class TaskController {
     }
 
     @PostMapping("/{taskId}/comment")
+    @Operation(summary = "Доступен только авторизованным пользователям")
     public CommentDto addComment(@PathVariable Long taskId,
                                  @RequestBody CommentDto commentDto) {
         log.info("POST-запрос на добавления комментария {} к задаче id = {}", commentDto, taskId);
         return CommentMapper.convertToCommentDto(
                 taskService.addComment(taskId, commentDto)
         );
+    }
+
+    @GetMapping("/{taskId}/comment")
+    public CommentDto getAllTaskComments(@PathVariable Long taskId) {
+        log.info("GET-запрос на получение всех комментариев задачи с id {}", taskId);
+        return null ;
     }
 }

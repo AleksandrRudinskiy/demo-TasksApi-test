@@ -172,6 +172,20 @@ public class TaskServiceImpl implements TaskService {
         }
     }
 
+
+    /**
+     * Получение списка всех комментариев к задаче
+     *
+     * @return список комментариев
+     */
+    @Override
+    public List<CommentDto> getTaskComments(Long taskId) {
+
+        return commentRepository.findByTaskId(taskId).stream()
+                .map(CommentMapper::convertToCommentDto)
+                .collect(Collectors.toList());
+    }
+
     @Override
     public void deleteTaskById(Long taskId) {
 

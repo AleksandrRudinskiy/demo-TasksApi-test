@@ -8,4 +8,6 @@ import java.util.List;
 public interface CommentRepository extends JpaRepository<Comment, Long> {
     @Query(value = "select id from comments where task_id = ?1", nativeQuery = true)
     List<Long> getCommentsIdByTaskId(long taskId);
+
+    List<Comment> findByTaskId(Long taskId);
 }
