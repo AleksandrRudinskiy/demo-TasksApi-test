@@ -14,4 +14,6 @@ public interface TaskPerformerRepository extends JpaRepository<TaskPerformer, Lo
     @Query(value = "select task_id from tasks_performers where performer_id = ?1", nativeQuery = true)
     List<Long> getTaskIdsByPerformerId(Long performerId, Pageable page);
 
+    TaskPerformer getByTaskId(Long taskId);
+
 }

@@ -56,6 +56,10 @@ public class TaskController {
         return taskService.getTaskComments(taskId);
     }
 
+    //данную функцию должен выполнять только админ!!!
+    /* написать тест на проверку авторизации пользователя как админа,
+    в противном случае выдать исключение
+    */
     @DeleteMapping("/{taskId}")
     public TaskDto deleteTaskById(@PathVariable Long taskId) {
         log.info("DELETE -запрос на удаление задачи по id {}", taskId);

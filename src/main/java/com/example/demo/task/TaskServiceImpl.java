@@ -81,6 +81,11 @@ public class TaskServiceImpl implements TaskService {
      *
      * @return обновленная задача
      */
+
+   /*
+   Предусмотреть в логике, что если назначается исполнитель,
+   то статус задачи меняется на IN_PROGRESS
+    */
     @Override
     public TaskDto patchTaskByAdmin(TaskDto taskDto, long taskId) {
         if (taskRepository.findById(taskId).isPresent()) {
@@ -108,19 +113,24 @@ public class TaskServiceImpl implements TaskService {
             TaskDto taskDto1 = TaskMapper.convertToTaskDto(taskRepository.save(pachedTask), new ArrayList<>(), null);
             if (taskDto.getPerformer() != null) {
                 User performer = userRepository.findById(taskDto.getPerformer().getId()).get();
-                log.info("performer = {}", taskDto.getPerformer());
                 if (taskPerformerRepository.getTaskPerformerByTaskId(taskId) != null) {
                     TaskPerformer taskPerformer = taskPerformerRepository.getTaskPerformerByTaskId(taskId);
                     taskPerformer.setTask(pachedTask);
                     taskPerformer.setPerformer(performer);
                     taskPerformerRepository.save(taskPerformer);
                     taskDto1.setPerformer(UserMapper.convertToUserDto(userRepository.findById(taskPerformer.getPerformer().getId()).get()));
+                    taskDto1.setStatus(Status.IN_PROGRESS);
                 } else {
                     TaskPerformer taskPerformer = TaskMapper.convertTaskPerformerFromTask(pachedTask, performer);
                     taskPerformerRepository.save(taskPerformer);
                     taskDto1.setPerformer(UserMapper.convertToUserDto(userRepository.findById(taskPerformer.getPerformer().getId()).get()));
+                    taskDto1.setStatus(Status.IN_PROGRESS);
                 }
                 taskDto1.setCommentsIds(commentRepository.getCommentsIdByTaskId(taskId));
+                taskRepository.save(TaskMapper.convertToTask(
+                        taskDto1,
+                       taskRepository.findById(taskDto1.getId()).get().getAuthor()));
+
             }
             return taskDto1;
         } else {
@@ -172,7 +182,6 @@ public class TaskServiceImpl implements TaskService {
         }
     }
 
-
     /**
      * Получение списка всех комментариев к задаче по taskId
      *
@@ -196,7 +205,7 @@ public class TaskServiceImpl implements TaskService {
     public TaskDto deleteTaskById(Long taskId) {
         Optional<Task> taskOptional = taskRepository.findById(taskId);
         List<Long> commentsIds = commentRepository.getCommentsIdByTaskId(taskId);
-        User performer;
+        User performer = null;
         TaskDto taskDto;
         if (taskOptional.isEmpty()) {
             throw new NotFoundException("Task not present id = " + taskId);
@@ -205,6 +214,13 @@ public class TaskServiceImpl implements TaskService {
             if (taskPerformerRepository.getTaskPerformerByTaskId(taskId) != null) {
                 performer = taskPerformerRepository.getTaskPerformerByTaskId(taskId).getPerformer();
                 taskDto = TaskMapper.convertToTaskDto(taskOptional.get(), commentsIds, UserMapper.convertToUserDto(performer));
+            }
+            if (!commentsIds.isEmpty()) {
+                commentsIds.forEach(commentRepository::deleteById);
+            }
+            if (performer != null) {
+                TaskPerformer taskPerformer = taskPerformerRepository.getTaskPerformerByTaskId(taskId);
+                taskPerformerRepository.deleteById(taskPerformer.getId());
             }
             taskRepository.deleteById(taskId);
             return taskDto;
